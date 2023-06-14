@@ -1,0 +1,12 @@
+:root {
+    --primary-color: #debb9d;
+    --secondary-color: #5a2800;
+    --white-text: #fff
+}
+
+body {
+    margin: 0px !important;
+    font-family: Verdana, Arial, 'Times New Roman', sans-serif;
+    color: var(--white-text);
+    background-color: var(--primary-color);
+}
