@@ -34,6 +34,8 @@ export default {};
 
 <style>
 header {
+  color: var(--white-text);
+  margin-bottom: 60px;
   position: relative;
   padding: 5px 3rem;
   display: flex;
@@ -46,14 +48,14 @@ header {
 }
 
 header .content {
-  z-index: 1; /* Isso garante que o conteúdo apareça acima das bordas e imagens de canto */
+  z-index: 1;
 }
 
 .corner {
   position: absolute;
   width: 20px;
   height: 20px;
-  z-index: 2; /* Isso garante que as imagens de canto apareçam acima das bordas */
+  z-index: 2;
 }
 
 .border {
@@ -63,10 +65,8 @@ header .content {
   height: 6px;
   width: 100%;
   background-repeat: repeat-x;
-  z-index: 1; /* Isso garante que as bordas apareçam abaixo do conteúdo e imagens de canto */
+  z-index: 1;
 }
-
-/* Adicione uma classe para a borda inferior */
 
 .border-bottom {
   position: absolute;

@@ -6,7 +6,14 @@
 
 body {
     margin: 0px !important;
+    height: fit-content;
+    color: var(--secondary-color);
     font-family: Verdana, Arial, 'Times New Roman', sans-serif;
-    color: var(--white-text);
     background-color: var(--primary-color);
+}
+
+.containter {
+    display: flex;
+    align-content: center;
+    justify-content: center;
 }
