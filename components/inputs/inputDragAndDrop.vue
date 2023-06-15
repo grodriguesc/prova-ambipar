@@ -55,7 +55,7 @@ export default {
 
           const result = {
             hitpointsHealed: 0,
-            damageTaken: { total: 0, byCreatureKind: {} },
+            damageTaken: { total: 0, byCreatureKind: {}, creatureImages: {} },
             blackKnightHitpoints: [],
             blackKnightHitpoints: 0,
             unknownDamage: 0,
@@ -65,6 +65,7 @@ export default {
 
           let knownDamage = 0;
           let currentBlackKnightDamage = 0;
+          const creatureImages = {};
 
           lines.forEach((line) => {
             // Matches "You healed yourself for X hitpoints."
@@ -76,7 +77,6 @@ export default {
             }
 
             // Matches "You lose X hitpoints due to an attack by a Y."
-            // The change is here - (.+) instead of (\w+)
             const damageByCreature = line.match(
               /You lose (\d+) hitpoints due to an attack by a ([^.]+)./
             );
@@ -89,6 +89,11 @@ export default {
                 result.damageTaken.byCreatureKind[creature] += damage;
               } else {
                 result.damageTaken.byCreatureKind[creature] = damage;
+                result.damageTaken.creatureImages[
+                  creature
+                ] = `https://static.tibia.com/images/library/${creature
+                  .replace(/ /g, "")
+                  .toLowerCase()}.gif`;
               }
             }
 
@@ -137,6 +142,7 @@ export default {
           result.unknownDamage = result.damageTaken.total - knownDamage;
 
           this.$emit("data-calculated", result);
+          this.$emit("creature-images", creatureImages); // New event for creature images
         };
 
         reader.readAsText(file);

@@ -1,6 +1,7 @@
 <template>
   <div class="hunt-analyzer pixel-font">
     <h1>Hunt Analyzer</h1>
+    {{}}
     <table>
       <tr>
         <th>Monstro</th>
@@ -10,8 +11,16 @@
         v-for="(damage, monster) in dataCalculated.damageTaken.byCreatureKind"
         :key="monster"
       >
-        <td>{{ monster }}</td>
-        <td>{{ damage }}</td>
+        <td class="container creature-icon">
+          <img
+            :src="dataCalculated.damageTaken.creatureImages[monster]"
+            :alt="monster"
+          />
+          <p>{{ monster }}</p>
+        </td>
+        <td>
+          <p class="container">{{ damage }}</p>
+        </td>
       </tr>
     </table>
     <div>
@@ -19,14 +28,17 @@
         <h2>Dano total recebido: {{ dataCalculated.damageTaken.total }}</h2>
       </div>
 
-      <div class="unknown-damage">
+      <div class="unknown-damage" v-if="dataCalculated.unknownDamage">
         <h2>
           Dano de origens desconhecidas: {{ dataCalculated.unknownDamage }}
         </h2>
       </div>
       <h2>Experiência total ganha: {{ dataCalculated.experienceGained }}</h2>
 
-      <h2 class="black-knight-img">
+      <h2
+        class="black-knight-img"
+        v-if="dataCalculated.blackKnightHitpoints > 0"
+      >
         <img width="64" src="static\creatureGifs\Black_Knight.gif" />
         Vida total do Black Knight:
         {{ dataCalculated.blackKnightHitpoints }}
@@ -42,7 +54,7 @@ export default {
       type: Object,
       default: {
         hitpointsHealed: 0,
-        damageTaken: { total: 0, byCreatureKind: {} },
+        damageTaken: { total: 0, byCreatureKind: {}, creatureImages: {} },
         blackKnightHitpoints: [],
         blackKnightHitpoints: 0,
         unknownDamage: 0,
@@ -76,12 +88,18 @@ table {
   border-collapse: collapse;
 }
 
+.creature-icon {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
 td,
 th {
   border: 1px solid white;
   padding: 0.5em;
 }
-
 @media (max-width: 768px) {
   .black-knight-img {
     margin-left: auto !important;

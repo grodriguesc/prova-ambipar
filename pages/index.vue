@@ -1,34 +1,43 @@
 <template>
   <div class="container">
-    <InputDragAndDrop @data-calculated="updateData" />
-    <HuntAnalyzer :data-calculated="dataCalculated" />
+    <InputDragAndDrop
+      @data-calculated="updateData"
+      @creature-images="updateCreatureList"
+    />
+    <HuntAnalyzer
+      :data-calculated="dataCalculated"
+      :creatures-list="creaturesList"
+    />
   </div>
 </template>
 
 <script>
+import DamageByCreature from "~/components/huntAnalyzer/damageByCreature.vue";
 import HuntAnalyzer from "~/components/huntAnalyzer/huntAnalyzer.vue";
 import InputDragAndDrop from "~/components/inputs/inputDragAndDrop.vue";
 
 export default {
-  components: { InputDragAndDrop, HuntAnalyzer },
+  components: { InputDragAndDrop, HuntAnalyzer, DamageByCreature },
   data() {
     return {
       dataCalculated: {
         hitpointsHealed: 0,
-        damageTaken: { total: 0, byCreatureKind: {} },
+        damageTaken: { total: 0, byCreatureKind: {}, creatureImages: {} },
         blackKnightHitpoints: [],
         blackKnightHitpoints: 0,
         unknownDamage: 0,
         experienceGained: 0,
         loot: {},
       },
+      creaturesList: {},
     };
   },
   methods: {
     updateData(newData) {
-      console.log(newData);
       this.dataCalculated = newData;
-      console.log(this.dataCalculated);
+    },
+    updateCreatureList(newData) {
+      this.creaturesList = newData;
     },
   },
 };
