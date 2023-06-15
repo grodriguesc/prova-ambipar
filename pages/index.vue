@@ -12,12 +12,11 @@
 </template>
 
 <script>
-import DamageByCreature from "~/components/huntAnalyzer/damageByCreature.vue";
 import HuntAnalyzer from "~/components/huntAnalyzer/huntAnalyzer.vue";
 import InputDragAndDrop from "~/components/inputs/inputDragAndDrop.vue";
 
 export default {
-  components: { InputDragAndDrop, HuntAnalyzer, DamageByCreature },
+  components: { InputDragAndDrop, HuntAnalyzer },
   data() {
     return {
       dataCalculated: {
