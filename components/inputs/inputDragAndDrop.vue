@@ -109,6 +109,23 @@ export default {
               result.experienceGained += parseInt(exp[1]);
             }
 
+            const blackKnightDamage = line.match(
+              /A Black Knight loses (\d+) hitpoints due to your attack./
+            );
+            if (blackKnightDamage) {
+              currentBlackKnightDamage += parseInt(blackKnightDamage[1]);
+            }
+
+            // Matches "Loot of a Black Knight: X Y."
+            const blackKnightLoot = line.match(/Loot of a Black Knight: .+/);
+            if (blackKnightLoot) {
+              result.blackKnightHitpoints = Math.max(
+                result.blackKnightHitpoints,
+                currentBlackKnightDamage
+              );
+              currentBlackKnightDamage = 0; // reset for the next Black Knight
+            }
+
             // Matches "Loot of a Y: X."
             const lootStringMatch = line.match(/Loot of a .+: (.+)./);
 
@@ -142,27 +159,9 @@ export default {
                 }
               });
             }
-
-            const blackKnightDamage = line.match(
-              /A Black Knight loses (\d+) hitpoints due to your attack./
-            );
-            if (blackKnightDamage) {
-              currentBlackKnightDamage += parseInt(blackKnightDamage[1]);
-            }
-
-            // Matches "Loot of a Black Knight: X Y."
-            const blackKnightLoot = line.match(/Loot of a Black Knight: .+/);
-            if (blackKnightLoot) {
-              result.blackKnightHitpoints = Math.max(
-                result.blackKnightHitpoints,
-                currentBlackKnightDamage
-              );
-              currentBlackKnightDamage = 0; // reset for the next Black Knight
-            }
           });
-          console.log(result.blackKnightHitpoints);
           result.unknownDamage = result.damageTaken.total - knownDamage;
-
+          console.log(result.blackKnightHitpoints);
           this.$emit("data-calculated", result);
           this.$emit("creature-images", creatureImages); // New event for creature images
         };
