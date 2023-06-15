@@ -109,16 +109,35 @@ export default {
               result.experienceGained += parseInt(exp[1]);
             }
 
-            // Matches "Loot of a Y: X Z."
-            const loot = line.match(/Loot of a .+: (\d*) (\w+)./);
-            if (loot) {
-              const count = parseInt(loot[1]) || 1; // If no count is given, assume 1
-              const item = loot[2];
-              if (result.loot[item]) {
-                result.loot[item] += count;
-              } else {
-                result.loot[item] = count;
+            // Matches "Loot of a Y: X."
+            const lootStringMatch = line.match(/Loot of a .+: (.+)./);
+
+            if (lootStringMatch) {
+              const lootString = lootStringMatch[1];
+
+              if (lootString === "nothing") {
+                return;
               }
+
+              const lootItems = lootString.split(","); // This will give us an array of loots
+
+              lootItems.forEach((lootItem) => {
+                const loot = lootItem.trim().match(/(\d*)\s*(.+)/);
+
+                if (loot) {
+                  const count = parseInt(loot[1]) || 1; // If no count is given, assume 1
+                  let item = loot[2];
+
+                  // Remove "a" or "an" prefix from the item
+                  item = item.replace(/^(a|an)\s/, "");
+
+                  if (result.loot[item]) {
+                    result.loot[item] += count;
+                  } else {
+                    result.loot[item] = count;
+                  }
+                }
+              });
             }
 
             const blackKnightDamage = line.match(

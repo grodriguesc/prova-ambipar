@@ -1,7 +1,6 @@
 <template>
   <div class="hunt-analyzer pixel-font">
     <h1>Hunt Analyzer</h1>
-    {{}}
     <table>
       <tr>
         <th>Monstro</th>
@@ -20,6 +19,23 @@
         </td>
         <td>
           <p class="container">{{ damage }}</p>
+        </td>
+      </tr>
+    </table>
+
+    <h1>Loot Analyzer</h1>
+
+    <table>
+      <tr>
+        <th>Loot</th>
+        <th>Quatidade</th>
+      </tr>
+      <tr v-for="(quantity, loot) in dataCalculated.loot" :key="loot">
+        <td class="container">
+          <p>{{ loot }}</p>
+        </td>
+        <td>
+          <p class="container">{{ quantity }}</p>
         </td>
       </tr>
     </table>
