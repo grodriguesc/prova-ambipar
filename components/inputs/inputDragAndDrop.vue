@@ -161,9 +161,7 @@ export default {
             }
           });
           result.unknownDamage = result.damageTaken.total - knownDamage;
-          console.log(result.blackKnightHitpoints);
           this.$emit("data-calculated", result);
-          this.$emit("creature-images", creatureImages); // New event for creature images
         };
 
         reader.readAsText(file);

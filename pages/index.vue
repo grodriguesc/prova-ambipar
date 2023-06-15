@@ -1,13 +1,9 @@
+"use_client"
+
 <template>
   <div class="container">
-    <InputDragAndDrop
-      @data-calculated="updateData"
-      @creature-images="updateCreatureList"
-    />
-    <HuntAnalyzer
-      :data-calculated="dataCalculated"
-      :creatures-list="creaturesList"
-    />
+    <InputDragAndDrop @data-calculated="updateData" />
+    <HuntAnalyzer :data-calculated="dataCalculated" />
   </div>
 </template>
 
@@ -29,14 +25,15 @@ export default {
         loot: {},
       },
       creaturesList: {},
+      itemList: {},
     };
   },
   methods: {
     updateData(newData) {
       this.dataCalculated = newData;
     },
-    updateCreatureList(newData) {
-      this.creaturesList = newData;
+    updateItemList(newData) {
+      this.itemList = newData;
     },
   },
 };

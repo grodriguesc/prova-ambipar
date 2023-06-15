@@ -10,7 +10,7 @@
         v-for="(damage, monster) in dataCalculated.damageTaken.byCreatureKind"
         :key="monster"
       >
-        <td class="container creature-icon">
+        <td class="container tibia-icon">
           <img
             :src="dataCalculated.damageTaken.creatureImages[monster]"
             :alt="monster"
@@ -28,10 +28,17 @@
     <table>
       <tr>
         <th>Loot</th>
-        <th>Quatidade</th>
+        <th>Quantidade</th>
       </tr>
       <tr v-for="(quantity, loot) in dataCalculated.loot" :key="loot">
-        <td class="container">
+        <td class="container tibia-icon">
+          <img
+            v-if="getItemImageUrl(loot)"
+            width="32"
+            height="32"
+            :src="getItemImageUrl(loot)"
+            alt="Imagem do item"
+          />
           <p>{{ loot }}</p>
         </td>
         <td>
@@ -79,6 +86,42 @@ export default {
       },
     },
   },
+  data() {
+    return {
+      itemIds: {},
+    };
+  },
+  mounted() {
+    // Get item ID and build image URL
+    fetch("http://localhost:3001/api/getItems/item-list")
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        this.itemIds = data;
+      })
+      .catch((e) => console.log(e));
+  },
+
+  methods: {
+    getItemImageUrl(itemName) {
+      const itemNameLower = itemName.toLowerCase();
+      let itemId;
+
+      // Verifique se o nome do item existe
+      if (this.itemIds.hasOwnProperty(itemNameLower)) {
+        itemId = this.itemIds[itemNameLower];
+      } else {
+        // Se não existir, adicione um 's' no final do nome do item
+        const pluralItemName = itemNameLower + "s";
+        itemId = this.itemIds[pluralItemName];
+      }
+
+      return itemId
+        ? `https://static.tibia.com/images/charactertrade/objects/${itemId}.gif`
+        : null;
+    },
+  },
 };
 </script>
 
@@ -104,7 +147,7 @@ table {
   border-collapse: collapse;
 }
 
-.creature-icon {
+.tibia-icon {
   display: flex;
   flex-direction: column;
   justify-content: center;

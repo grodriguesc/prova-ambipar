@@ -29,3 +29,15 @@ pnpm run dev
 # yarn
 yarn dev
 ```
+
+## Optional
+
+- go to https://github.com/grodriguesc/prova-ambipar-node
+
+- clone the project and start it with:
+
+```bash
+node server.js
+```
+
+- This will make the loot analyzer have item images
