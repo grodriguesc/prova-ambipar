@@ -131,6 +131,9 @@ export default {
                   // Remove "a" or "an" prefix from the item
                   item = item.replace(/^(a|an)\s/, "");
 
+                  // Convert item to singular
+                  item = this.toSingular(item);
+
                   if (result.loot[item]) {
                     result.loot[item] += count;
                   } else {
@@ -194,6 +197,13 @@ export default {
       this.mouseCounter--;
       if (this.mouseCounter === 0) {
         e.target.classList.remove("highlight");
+      }
+    },
+    toSingular(word) {
+      if (word.endsWith("s")) {
+        return word.slice(0, -1);
+      } else {
+        return word;
       }
     },
   },
