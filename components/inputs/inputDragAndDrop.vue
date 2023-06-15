@@ -1,6 +1,14 @@
 <template>
-  <div>
-    <div id="drop-area" @dragover.prevent @dragenter.prevent @drop="handleDrop">
+  <div class="input-size">
+    <div
+      id="drop-area"
+      @dragover.prevent
+      @dragenter="dragEnter"
+      @dragleave="dragLeave"
+      @mouseenter="mouseEnter"
+      @mouseleave="mouseLeave"
+      @drop="handleDrop"
+    >
       <input
         type="file"
         id="fileElem"
@@ -16,6 +24,12 @@
 
 <script>
 export default {
+  data() {
+    return {
+      dragCounter: 0,
+      mouseCounter: 0,
+    };
+  },
   methods: {
     handleFiles(e) {
       let files = e.target.files || e.dataTransfer.files;
@@ -24,6 +38,9 @@ export default {
     },
 
     handleDrop(e) {
+      e.preventDefault();
+      e.target.classList.remove("highlight");
+      this.dragCounter = 0;
       let files = e.dataTransfer.files;
       if (!files.length) return;
       this.createFile(files[0]);
@@ -34,13 +51,124 @@ export default {
         let reader = new FileReader();
 
         reader.onload = (e) => {
-          console.log(e.target.result);
-          alert("cheguei aqui");
+          const lines = e.target.result.split("\n");
+
+          const result = {
+            hitpointsHealed: 0,
+            damageTaken: { total: 0, byCreatureKind: {} },
+            blackKnightHitpoints: [],
+            blackKnightHitpoints: 0,
+            unknownDamage: 0,
+            experienceGained: 0,
+            loot: {},
+          };
+
+          let knownDamage = 0;
+          let currentBlackKnightDamage = 0;
+
+          lines.forEach((line) => {
+            // Matches "You healed yourself for X hitpoints."
+            const healed = line.match(
+              /You healed yourself for (\d+) hitpoints./
+            );
+            if (healed) {
+              result.hitpointsHealed += parseInt(healed[1]);
+            }
+
+            // Matches "You lose X hitpoints due to an attack by a Y."
+            // The change is here - (.+) instead of (\w+)
+            const damageByCreature = line.match(
+              /You lose (\d+) hitpoints due to an attack by a ([^.]+)./
+            );
+            if (damageByCreature) {
+              const damage = parseInt(damageByCreature[1]);
+              const creature = damageByCreature[2];
+              result.damageTaken.total += damage;
+              knownDamage += damage;
+              if (result.damageTaken.byCreatureKind[creature]) {
+                result.damageTaken.byCreatureKind[creature] += damage;
+              } else {
+                result.damageTaken.byCreatureKind[creature] = damage;
+              }
+            }
+
+            // Matches "You lose X hitpoints."
+            const damage = line.match(/You lose (\d+) hitpoints./);
+            if (damage && !damageByCreature) {
+              result.damageTaken.total += parseInt(damage[1]);
+            }
+
+            // Matches "You gained X experience points."
+            const exp = line.match(/You gained (\d+) experience points./);
+            if (exp) {
+              result.experienceGained += parseInt(exp[1]);
+            }
+
+            // Matches "Loot of a Y: X Z."
+            const loot = line.match(/Loot of a .+: (\d*) (\w+)./);
+            if (loot) {
+              const count = parseInt(loot[1]) || 1; // If no count is given, assume 1
+              const item = loot[2];
+              if (result.loot[item]) {
+                result.loot[item] += count;
+              } else {
+                result.loot[item] = count;
+              }
+            }
+
+            const blackKnightDamage = line.match(
+              /A Black Knight loses (\d+) hitpoints due to your attack./
+            );
+            if (blackKnightDamage) {
+              currentBlackKnightDamage += parseInt(blackKnightDamage[1]);
+            }
+
+            // Matches "Loot of a Black Knight: X Y."
+            const blackKnightLoot = line.match(/Loot of a Black Knight: .+/);
+            if (blackKnightLoot) {
+              result.blackKnightHitpoints = Math.max(
+                result.blackKnightHitpoints,
+                currentBlackKnightDamage
+              );
+              currentBlackKnightDamage = 0; // reset for the next Black Knight
+            }
+          });
+          console.log(result.blackKnightHitpoints);
+          result.unknownDamage = result.damageTaken.total - knownDamage;
+
+          this.$emit("data-calculated", result);
         };
 
         reader.readAsText(file);
       } else {
-        console.log("Formato de arquivo não suportado");
+        alert("Formato de arquivo não suportado");
+      }
+    },
+
+    dragEnter(e) {
+      this.dragCounter++;
+      if (this.dragCounter === 1) {
+        e.target.classList.add("highlight");
+      }
+    },
+
+    dragLeave(e) {
+      this.dragCounter--;
+      if (this.dragCounter === 0) {
+        e.target.classList.remove("highlight");
+      }
+    },
+    mouseEnter(e) {
+      this.mouseCounter++;
+      if (this.mouseCounter === 1) {
+        e.target.classList.add("highlight");
+      }
+    },
+
+    mouseLeave(e) {
+      this.mouseCounter--;
+      if (this.mouseCounter === 0) {
+        e.target.classList.remove("highlight");
       }
     },
   },
@@ -48,14 +176,21 @@ export default {
 </script>
 
 <style scoped>
+.input-size {
+  width: 80%;
+}
 #drop-area {
-  width: 200px;
   height: 100px;
   border: 2px dashed var(--white-text);
+  border-radius: 8px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  flex-direction: column;
   gap: 10px;
+}
+
+#drop-area.highlight {
+  background-color: var(--white-text);
 }
 </style>
